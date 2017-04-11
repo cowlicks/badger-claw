@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-
 from glob import glob
 import json
 import os
@@ -9,6 +8,7 @@ from time import sleep
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
+
 import top500
 
 
@@ -33,6 +33,7 @@ def start_driver():
     opts.binary_location = '/usr/bin/google-chrome-stable'
     opts.add_extension(get_extension_path())
     opts.add_experimental_option("prefs", {"profile.block_third_party_cookies": False})
+    opts.add_argument('--dns-prefetch-disable')
     return webdriver.Chrome(chrome_options=opts)
 
 
@@ -45,17 +46,36 @@ def save(driver):
 
     with open('results.json', 'w') as f:
         f.write(json.dumps(data, indent=4, sort_keys=True))
+    print('Data saved successfully.')
+
+
+def timeout_workaround(driver):
+    '''
+    Selium has a bug where a tab that raises a timeout exception can't recover
+    gracefully. So we kill the tab and make a new one.
+    '''
+    driver.close()  # kill the broken site
+    driver.switch_to_window(driver.window_handles.pop())
+    before = set(driver.window_handles)
+    driver.execute_script('window.open()')
+    driver.switch_to_window((set(driver.window_handles) ^ before).pop())
+    return driver
 
 
 if __name__ == '__main__':
+    timeout = 5
     driver = start_driver()
-    driver.set_page_load_timeout(5)
+    driver.set_page_load_timeout(timeout)
+    driver.set_script_timeout(timeout)
 
     for url in top500.urls:
         try:
+            print('visiting %s' % url)
             driver.get(url)
-            sleep(5)
-        except TimeoutException:
+            sleep(timeout)
+        except TimeoutException as e:
+            print('timeout on %s ' % url)
+            driver = timeout_workaround(driver)
             continue
 
     save(driver)
