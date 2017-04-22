@@ -51,7 +51,7 @@ def save(driver):
 
 def timeout_workaround(driver):
     '''
-    Selium has a bug where a tab that raises a timeout exception can't recover
+    Selenium has a bug where a tab that raises a timeout exception can't recover
     gracefully. So we kill the tab and make a new one.
     '''
     driver.close()  # kill the broken site
@@ -63,7 +63,7 @@ def timeout_workaround(driver):
 
 
 if __name__ == '__main__':
-    timeout = 5
+    timeout = 10
     driver = start_driver()
     driver.set_page_load_timeout(timeout)
     driver.set_script_timeout(timeout)
