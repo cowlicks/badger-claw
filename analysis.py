@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-'''
-It'd be interesting to know what cookie values are the biggest culprits.
-'''
+
 from collections import defaultdict
 import json
 from pprint import pprint as print
+import sys
 
-with open('results.json') as f:
+data_filename = sys.argv[1] or 'results.json'
+with open(data_filename) as f:
     data = f.readlines()
 data = json.loads(''.join(data))
 
