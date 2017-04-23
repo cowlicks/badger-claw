@@ -14,12 +14,10 @@ if [[ $? -ne 0 ]]; then
     git rebase $repo/$branch --quiet
     make zip
     make crx
-    EXTENSION_PATH=$(ls -t *.crx | head -1 | xargs readlink -f)
+    export EXTENSION_PATH=$(ls -t *.crx | head -1 | xargs readlink -f)
     commit=$(git rev-parse HEAD)
     now=$(date +"%Y_%m_%d_%I_%M_%p")
-    OUT_FILE=results-$now-$commit.json
-    # run the scraper, name the file 
-    # results-$now-$commit.json
+    export OUT_FILE=results-$now-$commit.json
     popd
     ./crawler.py
 fi
