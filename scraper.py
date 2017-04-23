@@ -76,14 +76,12 @@ def timeout_workaround(driver):
     driver.switch_to_window((set(driver.window_handles) ^ before).pop())
     return driver
 
-
-if __name__ == '__main__':
-    timeout = 10
+def main(timeout=7, n_urls=len(top500.urls)):
     driver = start_driver()
     driver.set_page_load_timeout(timeout)
     driver.set_script_timeout(timeout)
 
-    for url in top500.urls:
+    for url in top500.urls[:n_urls]:
         try:
             print('visiting %s' % url)
             driver.get(url)
@@ -95,3 +93,7 @@ if __name__ == '__main__':
 
     save(driver)
     driver.quit()
+
+if __name__ == '__main__':
+    with xvfb_manager():
+        main()
