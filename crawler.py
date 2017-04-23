@@ -42,6 +42,7 @@ def get_extension_path():
             raise ValueError("No extension found. Put a .crx file in "
                              "this directory")
         return path.pop()
+    print('Using extension at %s' % path)
     return path
 
 
@@ -55,15 +56,16 @@ def start_driver():
 
 
 def save(driver):
+    out_file = os.environ.get('OUT_FILE', 'results.json')
     driver.get(background_url)
     data = {}
     for storage in storages:
         script = 'return badger.storage.%s.getItemClones()' % storage
         data[storage] = driver.execute_script(script)
 
-    with open('results.json', 'w') as f:
+    with open(out_file, 'w') as f:
         f.write(json.dumps(data, indent=4, sort_keys=True))
-    print('Data saved successfully.')
+    print('Data saved successfully to %s' % out_file)
 
 
 def timeout_workaround(driver):
