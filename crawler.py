@@ -18,6 +18,7 @@ background_url = base_url + "_generated_background_page.html"
 storages = ['action_map', 'snitch_map', 'action_map', 'cookieblock_list',
             'dnt_hashes', 'settings_map', 'snitch_map', 'supercookie_domains']
 
+
 @contextmanager
 def xvfb_manager():
     wants_xvfb = bool(int(os.environ.get("ENABLE_XVFB", 0)))
@@ -32,6 +33,7 @@ def xvfb_manager():
             vdisplay.stop()
     else:
         yield
+
 
 def get_extension_path():
     path = os.environ.get('EXTENSION_PATH', glob('*.crx'))
@@ -66,8 +68,8 @@ def save(driver):
 
 def timeout_workaround(driver):
     '''
-    Selenium has a bug where a tab that raises a timeout exception can't recover
-    gracefully. So we kill the tab and make a new one.
+    Selenium has a bug where a tab that raises a timeout exception can't
+    recover gracefully. So we kill the tab and make a new one.
     '''
     driver.close()  # kill the broken site
     driver.switch_to_window(driver.window_handles.pop())
@@ -76,24 +78,26 @@ def timeout_workaround(driver):
     driver.switch_to_window((set(driver.window_handles) ^ before).pop())
     return driver
 
+
 def main(timeout=7, n_urls=len(top500.urls)):
-    driver = start_driver()
-    driver.set_page_load_timeout(timeout)
-    driver.set_script_timeout(timeout)
+    with xvfb_manager():
+        driver = start_driver()
+        driver.set_page_load_timeout(timeout)
+        driver.set_script_timeout(timeout)
 
-    for url in top500.urls[:n_urls]:
-        try:
-            print('visiting %s' % url)
-            driver.get(url)
-            sleep(timeout)
-        except TimeoutException as e:
-            print('timeout on %s ' % url)
-            driver = timeout_workaround(driver)
-            continue
+        for url in top500.urls[:n_urls]:
+            try:
+                print('visiting %s' % url)
+                driver.get(url)
+                sleep(timeout)
+            except TimeoutException as e:
+                print('timeout on %s ' % url)
+                driver = timeout_workaround(driver)
+                continue
 
-    save(driver)
-    driver.quit()
+        save(driver)
+        driver.quit()
+
 
 if __name__ == '__main__':
-    with xvfb_manager():
-        main()
+    main()
