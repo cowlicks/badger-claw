@@ -4,6 +4,7 @@ from glob import glob
 import json
 import os
 from time import sleep
+from contextlib import contextmanager
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -17,6 +18,20 @@ background_url = base_url + "_generated_background_page.html"
 storages = ['action_map', 'snitch_map', 'action_map', 'cookieblock_list',
             'dnt_hashes', 'settings_map', 'snitch_map', 'supercookie_domains']
 
+@contextmanager
+def xvfb_manager():
+    wants_xvfb = bool(int(os.environ.get("ENABLE_XVFB", 0)))
+    if wants_xvfb:
+        from xvfbwrapper import Xvfb
+
+        vdisplay = Xvfb(width=1280, height=720)
+        vdisplay.start()
+        try:
+            yield vdisplay
+        finally:
+            vdisplay.stop()
+    else:
+        yield
 
 def get_extension_path():
     path = os.environ.get('EXTENSION_PATH', glob('*.crx'))
