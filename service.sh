@@ -19,9 +19,12 @@ if [[ $? -ne 0 ]]; then
     export EXTENSION_PATH=$(ls -t *.crx | head -1 | xargs readlink -f)
     commit=$(git rev-parse HEAD)
     now=$(date +"%Y_%m_%d_%I_%M_%p")
-    export OUT_FILE=results/results-$now-$commit.json
+    file_suffix=$now-$commit.json
+    export OUT_FILE=results/data-$file_suffix
     popd
     source env/bin/activate
     ./crawler.py
+    ./analysis.py $OUT_FILE
+    ./update_index.py $file_suffix
     deactivate
 fi
