@@ -3,6 +3,8 @@ pb_path=../privacybadger
 repo=origin
 branch=master
 
+mkdir -p results
+
 pushd $pb_path
 git fetch $repo
 git diff-index $repo/$branch --quiet
@@ -17,7 +19,7 @@ if [[ $? -ne 0 ]]; then
     export EXTENSION_PATH=$(ls -t *.crx | head -1 | xargs readlink -f)
     commit=$(git rev-parse HEAD)
     now=$(date +"%Y_%m_%d_%I_%M_%p")
-    export OUT_FILE=results-$now-$commit.json
+    export OUT_FILE=results/results-$now-$commit.json
     popd
     source env/bin/activate
     ./crawler.py
