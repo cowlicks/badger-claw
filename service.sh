@@ -26,5 +26,6 @@ if [[ $? -ne 0 ]]; then
     ./crawler.py
     ./analysis.py $OUT_FILE
     ./update_index.py $file_suffix
+    aws s3 sync --region us-east-2 results/ s3://badgers.cowlicks.website/results/
     deactivate
 fi
