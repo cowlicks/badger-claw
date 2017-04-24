@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+sudo apt-get install -y make zip # pb needs these
 sudo apt-get install -y chromium-browser chromium-chromedriver python-virtualenv xvfb
 virtualenv env
 source env/bin/activate
