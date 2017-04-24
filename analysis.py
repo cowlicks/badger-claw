@@ -9,9 +9,9 @@ import sys
 
 def load(data_location):
     with open(data_location) as f:
-        data = f.readlines()
-    pprint("Loaded data from %s " % data_location)
-    return json.loads(''.join(data))
+        data = json.load(f)
+    print("Loaded data from %s " % data_location)
+    return data
 
 
 def analyze(data):
@@ -41,7 +41,7 @@ def analyze(data):
             'supercookies_with_cookieblocks': len(set(data['supercookie_domains']) & set(cookieblocks)),
             'supercookies_with_blocks': len(set(data['supercookie_domains']) & set(blocks)),
             }
-    pprint("Data analyzed, here's what we got:")
+    print("Data analyzed, here's what we got:")
     pprint(analysis_results)
     return analysis_results
 
@@ -49,15 +49,20 @@ def analyze(data):
 def save(out_location, data):
     with open(out_location, 'w') as f:
         f.write(json.dumps(data, indent=4, sort_keys=True))
-    pprint("Saved analysis to %s" % out_location)
+    print("Saved analysis to %s" % out_location)
 
 
 def main():
-    data_location = sys.argv[1] or 'results.json'
+    try:
+        data_location = sys.argv[1]
+    except IndexError as e:
+        print('Uasage ./analysis.py DATAFILE')
+        raise e
     data = load(data_location)
     results = analyze(data)
 
     data_path, data_file = os.path.split(data_location)
+    data_file = data_file.lstrip('data-').lstrip('results-')
     out_location = os.path.join(data_path, 'analysis-' + data_file)
     save(out_location, results)
 
