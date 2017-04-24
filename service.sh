@@ -19,5 +19,7 @@ if [[ $? -ne 0 ]]; then
     now=$(date +"%Y_%m_%d_%I_%M_%p")
     export OUT_FILE=results-$now-$commit.json
     popd
+    source env/bin/activate
     ./crawler.py
+    deactivate
 fi
