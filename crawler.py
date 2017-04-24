@@ -21,7 +21,7 @@ storages = ['action_map', 'snitch_map', 'action_map', 'cookieblock_list',
 
 @contextmanager
 def xvfb_manager():
-    wants_xvfb = bool(int(os.environ.get("ENABLE_XVFB", 0)))
+    wants_xvfb = bool(int(os.environ.get("ENABLE_XVFB", 1)))
     if wants_xvfb:
         from xvfbwrapper import Xvfb
 
