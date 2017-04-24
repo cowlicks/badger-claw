@@ -12,3 +12,5 @@ index['index'].insert(0, new_item)
 
 with open(index_location, 'w') as f:
     f.write(json.dumps(index, indent=4, sort_keys=True))
+
+print('Index updated')
