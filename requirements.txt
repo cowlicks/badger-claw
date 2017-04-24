@@ -1,2 +1,3 @@
 selenium
 xvfbwrapper
+awscli
