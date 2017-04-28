@@ -35,11 +35,12 @@ function parseSuffix(suffix) {
 
 
 function parseIndex(results) {
+  var numResultsToShow = 10;
   var index = results["index"];
   var out = "<ul>";
   var rlen = index.length;
-  if (rlen > 5) {
-    rlen = 5;
+  if (rlen > numResultsToShow) {
+    rlen = numResultsToShow;
   }
 
   for (var i = 0; i < rlen; i++) {
