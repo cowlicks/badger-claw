@@ -11,13 +11,13 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
 
 import top500
+from logger import logger
 
 
 base_url = "chrome-extension://mcgekeccgjgcmhnhbabplanchdogjcnh/"
 background_url = base_url + "_generated_background_page.html"
 storages = ['action_map', 'snitch_map', 'action_map', 'cookieblock_list',
             'dnt_hashes', 'settings_map', 'snitch_map', 'supercookie_domains']
-
 
 @contextmanager
 def xvfb_manager():
@@ -42,7 +42,7 @@ def get_extension_path():
             raise ValueError("No extension found. Put a .crx file in "
                              "this directory")
         return path.pop()
-    print('Using extension at %s' % path)
+    logger.info('Using extension at %s' % path)
     return path
 
 
@@ -67,7 +67,7 @@ def save(driver):
 
     with open(out_file, 'w') as f:
         f.write(json.dumps(data, indent=4, sort_keys=True))
-    print('Data saved successfully to %s' % out_file)
+    logger.info('Data saved successfully to %s' % out_file)
 
 
 def timeout_workaround(driver):
@@ -91,11 +91,11 @@ def main(timeout=7, n_urls=len(top500.urls)):
 
         for url in top500.urls[:n_urls]:
             try:
-                print('visiting %s' % url)
+                logger.info('visiting %s' % url)
                 driver.get(url)
                 sleep(timeout)
             except TimeoutException as e:
-                print('timeout on %s ' % url)
+                logger.info('timeout on %s ' % url)
                 driver = timeout_workaround(driver)
                 continue
 

@@ -3,14 +3,15 @@
 from collections import defaultdict
 import json
 import os
-from pprint import pprint
 import sys
+
+from logger import logger
 
 
 def load(data_location):
     with open(data_location) as f:
         data = json.load(f)
-    print("Loaded data from %s " % data_location)
+    logger.info("Loaded data from %s " % data_location)
     return data
 
 
@@ -41,22 +42,22 @@ def analyze(data):
             'supercookies_with_cookieblocks': len(set(data['supercookie_domains']) & set(cookieblocks)),
             'supercookies_with_blocks': len(set(data['supercookie_domains']) & set(blocks)),
             }
-    print("Data analyzed, here's what we got:")
-    pprint(analysis_results)
+    logger.info("Data analyzed, here's what we got:")
+    logger.info(analysis_results)
     return analysis_results
 
 
 def save(out_location, data):
     with open(out_location, 'w') as f:
         f.write(json.dumps(data, indent=4, sort_keys=True))
-    print("Saved analysis to %s" % out_location)
+    logger.info("Saved analysis to %s" % out_location)
 
 
 def main():
     try:
         data_location = sys.argv[1]
     except IndexError as e:
-        print('Uasage ./analysis.py DATAFILE')
+        logger.info('Uasage ./analysis.py DATAFILE')
         raise e
     data = load(data_location)
     results = analyze(data)
