@@ -53,11 +53,11 @@ def save(out_location, data):
     logger.info("Saved analysis to %s" % out_location)
 
 
-def main():
+if __name__ == '__main__':
     try:
         data_location = sys.argv[1]
     except IndexError as e:
-        logger.info('Uasage ./analysis.py DATAFILE')
+        logger.info('Uasage ./analysis.py data-DATE-COMMIT.json')
         raise e
     data = load(data_location)
     results = analyze(data)
@@ -66,7 +66,3 @@ def main():
     data_file = data_file.lstrip('data-').lstrip('results-')
     out_location = os.path.join(data_path, 'analysis-' + data_file)
     save(out_location, results)
-
-
-if __name__ == '__main__':
-    main()

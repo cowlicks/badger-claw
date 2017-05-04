@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 from glob import glob
-import json
 import os
 from time import sleep
 from contextlib import contextmanager
@@ -12,6 +11,7 @@ from selenium.webdriver.chrome.options import Options
 
 import top500
 from logger import logger
+from utils import save_json
 import config
 
 
@@ -19,6 +19,7 @@ base_url = "chrome-extension://mcgekeccgjgcmhnhbabplanchdogjcnh/"
 background_url = base_url + "_generated_background_page.html"
 storages = ['action_map', 'snitch_map', 'action_map', 'cookieblock_list',
             'dnt_hashes', 'settings_map', 'snitch_map', 'supercookie_domains']
+
 
 @contextmanager
 def xvfb_manager():
@@ -55,17 +56,13 @@ def start_driver():
     return webdriver.Chrome(config.CHROMEDRIVER_PATH, chrome_options=opts)
 
 
-def save(driver):
-    out_file = os.environ.get('OUT_FILE', 'results.json')
+def dump_data(driver):
     driver.get(background_url)
     data = {}
     for storage in storages:
         script = 'return badger.storage.%s.getItemClones()' % storage
         data[storage] = driver.execute_script(script)
-
-    with open(out_file, 'w') as f:
-        f.write(json.dumps(data, indent=4, sort_keys=True))
-    logger.info('Data saved successfully to %s' % out_file)
+    return data
 
 
 def timeout_workaround(driver):
@@ -81,7 +78,8 @@ def timeout_workaround(driver):
     return driver
 
 
-def main(timeout=7, n_urls=len(top500.urls), start=0):
+def crawl(timeout=7, n_urls=len(top500.urls), start=0):
+    logger.info('starting new crawl with timeout %s n_urls %s start %s' % (timeout, n_urls, start))
     with xvfb_manager():
         driver = start_driver()
         driver.set_page_load_timeout(timeout)
@@ -96,10 +94,11 @@ def main(timeout=7, n_urls=len(top500.urls), start=0):
                 logger.info('timeout on %s ' % url)
                 driver = timeout_workaround(driver)
                 continue
-
-        save(driver)
+        data = dump_data(driver)
         driver.quit()
+        return data
 
 
 if __name__ == '__main__':
-    main()
+    out_file = os.environ.get('OUT_FILE', 'results.json')
+    save_json(out_file, crawl(n_urls=5, start=100))
