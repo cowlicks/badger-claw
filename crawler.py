@@ -81,13 +81,13 @@ def timeout_workaround(driver):
     return driver
 
 
-def main(timeout=7, n_urls=len(top500.urls)):
+def main(timeout=7, n_urls=len(top500.urls), start=0):
     with xvfb_manager():
         driver = start_driver()
         driver.set_page_load_timeout(timeout)
         driver.set_script_timeout(timeout)
 
-        for url in top500.urls[:n_urls]:
+        for url in top500.urls[start:start+n_urls]:
             try:
                 logger.info('visiting %s' % url)
                 driver.get(url)
