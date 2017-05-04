@@ -12,6 +12,7 @@ from selenium.webdriver.chrome.options import Options
 
 import top500
 from logger import logger
+import config
 
 
 base_url = "chrome-extension://mcgekeccgjgcmhnhbabplanchdogjcnh/"
@@ -21,7 +22,7 @@ storages = ['action_map', 'snitch_map', 'action_map', 'cookieblock_list',
 
 @contextmanager
 def xvfb_manager():
-    wants_xvfb = bool(int(os.environ.get("ENABLE_XVFB", 1)))
+    wants_xvfb = bool(config.ENABLE_XVFB)
     if wants_xvfb:
         from xvfbwrapper import Xvfb
 
@@ -51,10 +52,7 @@ def start_driver():
     opts.add_extension(get_extension_path())
     opts.add_experimental_option("prefs", {"profile.block_third_party_cookies": False})
     opts.add_argument('--dns-prefetch-disable')
-    chromedriver_path = os.environ.get(
-            'CHROMEDRIVER_PATH',
-            '/usr/lib/chromium-browser/chromedriver')
-    return webdriver.Chrome(chromedriver_path, chrome_options=opts)
+    return webdriver.Chrome(config.CHROMEDRIVER_PATH, chrome_options=opts)
 
 
 def save(driver):
