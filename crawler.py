@@ -17,8 +17,7 @@ import config
 
 base_url = "chrome-extension://mcgekeccgjgcmhnhbabplanchdogjcnh/"
 background_url = base_url + "_generated_background_page.html"
-storages = ['action_map', 'snitch_map', 'action_map', 'cookieblock_list',
-            'dnt_hashes', 'settings_map', 'snitch_map', 'supercookie_domains']
+storages = ['action_map', 'snitch_map', 'cookieblock_list', 'dnt_hashes', 'settings_map']
 
 
 @contextmanager
